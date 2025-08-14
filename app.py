@@ -28,14 +28,26 @@ app.include_router(events_router)
 
 # Catch-all route for frontend (serves index.html for all non-API routes)
 
+
 from fastapi.responses import FileResponse
 from fastapi import Request
 
 @app.get("/{full_path:path}")
 async def serve_frontend(full_path: str, request: Request):
-    # Only serve index.html for non-static, non-API, non-assets routes
-    if full_path.startswith("assets/") or full_path.startswith("static/") or full_path.startswith("api/"):
+    # Serve static files and assets directly
+    asset_path = os.path.join(static_dir, full_path)
+    if (
+        full_path.startswith("assets/")
+        or full_path.startswith("static/")
+        or full_path.startswith("api/")
+        or full_path.endswith(".js")
+        or full_path.endswith(".css")
+        or full_path.endswith(".svg")
+    ):
+        if os.path.exists(asset_path):
+            return FileResponse(asset_path)
         return {"error": "Not found"}
+    # Otherwise, serve index.html for SPA routing
     index_path = os.path.join(static_dir, "index.html")
     if os.path.exists(index_path):
         return FileResponse(index_path)

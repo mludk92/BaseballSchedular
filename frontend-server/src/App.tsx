@@ -19,7 +19,7 @@ function App() {
   const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState<{ time: string; place: string; note: string }>({
     time: '',
-    place: 'Field 1',
+    place: '',
     note: '',
   });
   const [editId, setEditId] = useState<number | null>(null);
@@ -124,25 +124,29 @@ function App() {
         <div className="calendar-day">{day}</div>
         <div className="calendar-events">
           {eventsForDate(dateStr).map(ev => {
-            let fieldClass = '';
-            if (ev.place === 'Field 1') fieldClass = 'field1';
-            else if (ev.place === 'Field 2') fieldClass = 'field2';
-            else if (ev.place === 'Field 3') fieldClass = 'field3';
-            return (
-              <div
-                key={ev.id}
-                className={`event ${fieldClass}`}
-                onClick={e => {
-                  e.stopPropagation();
-                  openModal(dateStr, ev);
-                }}
-              >
-                <span className="event-time-place">{ev.time} - {ev.place}</span>
-                {ev.note && (
-                  <span className="event-note"> &nbsp;|&nbsp; {ev.note}</span>
-                )}
-              </div>
-            );
+                  let fieldClass = '';
+                  if (ev.place === 'Field 1' || !ev.place) {
+                    fieldClass = 'field1';
+                  } else if (ev.place === 'Field 2') {
+                    fieldClass = 'field2';
+                  } else if (ev.place === 'Field 3') {
+                    fieldClass = 'field3';
+                  }
+                  return (
+                    <div
+                      key={ev.id}
+                      className={`event ${fieldClass}`}
+                      onClick={e => {
+                        e.stopPropagation();
+                        openModal(dateStr, ev);
+                      }}
+                    >
+                      <span className="event-time-place">{ev.time} - {ev.place || 'Field 1'}</span>
+                      {ev.note && (
+                        <span className="event-note"> &nbsp;|&nbsp; {ev.note}</span>
+                      )}
+                    </div>
+                  );
           })}
         </div>
       </div>
@@ -210,6 +214,7 @@ function App() {
                     onChange={e => setForm({ ...form, place: e.target.value })}
                     required
                   >
+                    <option value="" disabled>Select a field</option>
                     <option value="Field 1">Field 1</option>
                     <option value="Field 2">Field 2</option>
                     <option value="Field 3">Field 3</option>

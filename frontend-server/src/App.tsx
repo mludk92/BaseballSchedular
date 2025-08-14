@@ -19,7 +19,7 @@ function App() {
   const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState<{ time: string; place: string; note: string }>({
     time: '',
-    place: '',
+    place: 'Field 1',
     note: '',
   });
   const [editId, setEditId] = useState<number | null>(null);
@@ -36,13 +36,15 @@ function App() {
       .catch(() => setEvents([]));
   }, []);
 
-  // Calendar setup
+  // Month navigation state
   const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth();
-  const daysInMonth = getDaysInMonth(year, month);
+  const [displayYear, setDisplayYear] = useState(today.getFullYear());
+  const [displayMonth, setDisplayMonth] = useState(today.getMonth()); // 0-indexed
+
+  // Calendar setup
+  const daysInMonth = getDaysInMonth(displayYear, displayMonth);
   const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const firstDayOfWeek = new Date(year, month, 1).getDay();
+  const firstDayOfWeek = new Date(displayYear, displayMonth, 1).getDay();
 
   // Open modal to add/edit event
   const openModal = (date: string, event?: Event) => {
@@ -112,7 +114,7 @@ function App() {
     calendarSquares.push(<div key={`blank-${i}`} className="calendar-square blank"></div>);
   }
   for (let day = 1; day <= daysInMonth; day++) {
-    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const dateStr = `${displayYear}-${String(displayMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     calendarSquares.push(
       <div
         key={dateStr}
@@ -121,21 +123,27 @@ function App() {
       >
         <div className="calendar-day">{day}</div>
         <div className="calendar-events">
-          {eventsForDate(dateStr).map(ev => (
-            <div
-              key={ev.id}
-              className="event"
-              onClick={e => {
-                e.stopPropagation();
-                openModal(dateStr, ev);
-              }}
-            >
-              <span className="event-time-place">{ev.time} - {ev.place}</span>
-              {ev.note && (
-                <span className="event-note"> &nbsp;|&nbsp; {ev.note}</span>
-              )}
-            </div>
-          ))}
+          {eventsForDate(dateStr).map(ev => {
+            let fieldClass = '';
+            if (ev.place === 'Field 1') fieldClass = 'field1';
+            else if (ev.place === 'Field 2') fieldClass = 'field2';
+            else if (ev.place === 'Field 3') fieldClass = 'field3';
+            return (
+              <div
+                key={ev.id}
+                className={`event ${fieldClass}`}
+                onClick={e => {
+                  e.stopPropagation();
+                  openModal(dateStr, ev);
+                }}
+              >
+                <span className="event-time-place">{ev.time} - {ev.place}</span>
+                {ev.note && (
+                  <span className="event-note"> &nbsp;|&nbsp; {ev.note}</span>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     );
@@ -147,9 +155,27 @@ function App() {
         <h1>Baseball Scheduling</h1>
         <p className="subtitle">Organize your games and events with ease!</p>
       </header>
-      <h2 className="month-title">
-        {today.toLocaleString('default', { month: 'long' })} {year}
-      </h2>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '8px' }}>
+        <button onClick={() => {
+          if (displayMonth === 0) {
+            setDisplayMonth(11);
+            setDisplayYear(displayYear - 1);
+          } else {
+            setDisplayMonth(displayMonth - 1);
+          }
+        }}>&lt; Prev</button>
+        <h2 className="month-title" style={{ margin: 0 }}>
+          {new Date(displayYear, displayMonth).toLocaleString('default', { month: 'long' })} {displayYear}
+        </h2>
+        <button onClick={() => {
+          if (displayMonth === 11) {
+            setDisplayMonth(0);
+            setDisplayYear(displayYear + 1);
+          } else {
+            setDisplayMonth(displayMonth + 1);
+          }
+        }}>Next &gt;</button>
+      </div>
       <div className="calendar-day-labels">
         {dayLabels.map(label => (
           <div key={label}>{label}</div>
@@ -178,13 +204,16 @@ function App() {
                 </div>
                 <div className="event-form-group">
                   <label htmlFor="event-place">Place:</label>
-                  <input
+                  <select
                     id="event-place"
-                    type="text"
                     value={form.place}
                     onChange={e => setForm({ ...form, place: e.target.value })}
                     required
-                  />
+                  >
+                    <option value="Field 1">Field 1</option>
+                    <option value="Field 2">Field 2</option>
+                    <option value="Field 3">Field 3</option>
+                  </select>
                 </div>
                 <div className="event-form-group">
                   <label htmlFor="event-note">Note:</label>

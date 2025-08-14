@@ -25,8 +25,8 @@ function App() {
   const [editId, setEditId] = useState<number | null>(null);
 
 
-  // Backend API URL
-  const API_URL = 'http://127.0.0.1:8000/events/';
+  // Backend API URL (use relative path for Heroku)
+  const API_URL = '/events/';
 
   // Fetch events from backend on mount
   useEffect(() => {

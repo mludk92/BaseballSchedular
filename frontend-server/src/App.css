@@ -156,6 +156,7 @@
   margin-top: 0;
 }
 
+/* Layout: calendar and form side by side */
 .calendar-container {
   max-width: 900px;
   margin: 0 auto;
@@ -263,6 +264,18 @@ body {
 .event.field3 {
   background: #ffd600;
   color: #222;
+}
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(24, 90, 157, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 .modal-content {
   background: #fff;

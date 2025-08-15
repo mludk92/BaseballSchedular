@@ -16,6 +16,8 @@ import os
 
 # Database connection URL (using Heroku Postgres)
 DATABASE_URL = os.environ.get("DATABASE_URL")
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 # Create the SQLAlchemy database engine
 engine = create_engine(DATABASE_URL)

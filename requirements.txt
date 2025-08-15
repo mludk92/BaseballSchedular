@@ -3,3 +3,4 @@ uvicorn
 SQLAlchemy
 sqlalchemy-orm
 pydantic
+psycopg2-binary

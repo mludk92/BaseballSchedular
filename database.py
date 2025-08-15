@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base
+import os
 
 # ================================================================
 # Purpose of this file (database.py)
@@ -8,27 +9,22 @@ from models import Base
 # Sets up the database connection and session management using SQLAlchemy.
 #
 # Key responsibilities:
-# - Create a connection to a local SQLite3 database (messages.db)
+# - Create a connection to a Postgres database (DATABASE_URL from env)
 # - Provide a reusable session object for interacting with the database
 # - Initialize the database schema based on ORM models
-#
 # ================================================================
 
-# Database connection URL (using SQLite, local file-based database)
-#set relative path to the database file
-DATABASE_URL = "sqlite:///./messages.db"
+# Database connection URL (using Heroku Postgres)
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
 # Create the SQLAlchemy database engine
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={"check_same_thread": False}  # Required for SQLite threading behavior
-)
+engine = create_engine(DATABASE_URL)
 
 # Create a configured "Session" class for database sessions
 SessionLocal = sessionmaker(
-    autocommit=False,     # Don't auto-commit transactions
-    autoflush=False,      # Don't auto-flush before commit
-    bind=engine           # Connect session to our engine
+    autocommit=False,
+    autoflush=False,
+    bind=engine
 )
 
 # Initialize the database schema

@@ -3,6 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from routes.messages import router as messages_router
 from routes.events import router as events_router
 from logger import get_logs
+from database import init_db
+
+# Ensure database tables are created on startup
+init_db()
 
 
 # Initialize FastAPI application
